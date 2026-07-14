@@ -7,7 +7,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions, auth, pg_temp;
 
-select plan(21);
+select plan(20);
 
 insert into auth.users (
   id,
@@ -95,6 +95,8 @@ select throws_ok(
     insert into public.subscriptions (user_id, plan_code, status)
     values ('00000000-0000-4000-8000-000000000001', 'pro', 'active')
   $$,
+  '42501',
+  'permission denied for table subscriptions',
   'authenticated user cannot insert subscription directly'
 );
 
@@ -104,6 +106,8 @@ select throws_ok(
     set status = 'active'
     where user_id = '00000000-0000-4000-8000-000000000001'
   $$,
+  '42501',
+  'permission denied for table subscriptions',
   'authenticated user cannot update subscription directly'
 );
 
@@ -137,7 +141,11 @@ select is(
 );
 
 select ok(
-  (select trial_started_at <= now() and trial_started_at > now() - interval '1 minute' from first_trial),
+  (
+    select trial_started_at <= statement_timestamp()
+      and trial_started_at > statement_timestamp() - interval '1 minute'
+    from first_trial
+  ),
   'trial start uses database clock'
 );
 
@@ -215,6 +223,8 @@ select throws_ok(
       now() - interval '1 day'
     )
   $$,
+  '23514',
+  'new row for relation "subscriptions" violates check constraint "subscriptions_trial_dates_check"',
   'invalid subscription trial date range is rejected'
 );
 
@@ -224,6 +234,8 @@ select throws_ok(
     set username = 'user_b'
     where id = '00000000-0000-4000-8000-000000000001'
   $$,
+  '23505',
+  'duplicate key value violates unique constraint "profiles_username_key"',
   'duplicate username is rejected case-insensitively'
 );
 
@@ -232,6 +244,8 @@ select set_config('request.jwt.claim.sub', '', true);
 
 select throws_ok(
   $$ select count(*) from public.profiles $$,
+  '42501',
+  'permission denied for table profiles',
   'anonymous users cannot access private profile data'
 );
 
