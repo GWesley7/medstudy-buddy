@@ -1,0 +1,1 @@
+-- Seed file reserved for future local Supabase development.

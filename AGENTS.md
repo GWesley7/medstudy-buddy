@@ -46,6 +46,9 @@ Nao implementar:
 ## Regras tecnicas
 
 - Usar TypeScript strict.
+- Manter `noImplicitAny` habilitado.
+- Manter `strictNullChecks` habilitado.
+- Manter `noUncheckedIndexedAccess` habilitado quando viavel.
 - Evitar `any`; quando inevitavel, justificar localmente.
 - Manter regras de negocio fora de componentes visuais.
 - Usar TanStack Query para estado remoto.
@@ -55,7 +58,7 @@ Nao implementar:
 - Validar dados no frontend e, quando houver fluxo sensivel, no server.
 - Nunca expor segredos no frontend.
 - Persistir sessoes de estudo no banco.
-- Usar `localStorage` apenas para cache ou preferencias nao criticas.
+- Usar `localStorage` apenas como contingencia temporaria para sessao ativa e preferencias nao criticas.
 - Criar testes para regras de dominio importantes.
 
 ## Regras de arquitetura
@@ -65,6 +68,8 @@ Nao implementar:
 - Centralizar configuracoes de algoritmo.
 - Centralizar validacoes.
 - Centralizar integracoes externas.
+- Centralizar chamadas ao Supabase em repositories, services ou modulos de feature.
+- Centralizar autorizacao de funcionalidades em feature entitlements.
 - Separar UI, dominio, dados e infraestrutura.
 - Evitar duplicacao de logica.
 - Registrar decisoes relevantes em documentacao.
@@ -93,7 +98,31 @@ Nao implementar:
 - Suportar paletas predefinidas.
 - Suportar cor primaria e cor de destaque personalizadas.
 - Validar contraste para evitar combinacoes ilegiveis.
+- Usar tokens semanticos.
+- Nao aplicar cores escolhidas diretamente em componentes.
+- Exigir contraste minimo de 4,5:1 para texto normal.
+- Exigir contraste minimo de 3:1 para texto grande, elementos interativos, bordas relevantes e indicadores.
+- Rejeitar combinacoes invalidas e sugerir alternativa valida.
+- Exigir preview antes de salvar tema personalizado.
+- Permitir restaurar tema padrao.
 - Persistir preferencias no banco.
+
+## Trial e assinaturas
+
+- Nao ha plano gratuito permanente.
+- Trial gratuito dura 3 dias.
+- Trial concede acesso equivalente ao Pro.
+- Trial inicia no primeiro login valido apos confirmacao de email.
+- Inicio do trial deve ser idempotente.
+- Multiplos logins nao podem reiniciar ou prolongar trial.
+- Fim do trial deve ser calculado no backend ou banco.
+- Depois do trial expirado, usuario ainda pode fazer login e acessar configuracoes/assinatura.
+- Dados do usuario nao devem ser apagados ao fim do trial.
+- Funcionalidades protegidas devem ser bloqueadas por entitlements centralizados.
+- Planos internos: `essential`, `pro`, `pro_ai`.
+- `pro_ai` e futuro, nao deve ser exibido nem implementado agora.
+- Nao hardcode nomes comerciais, permissoes ou condicoes como `plan === "pro"`.
+- Nao implementar checkout, cobranca, precos ou webhooks sem autorizacao.
 
 ## Banco de dados
 
@@ -105,6 +134,9 @@ Nao implementar:
 - Policies RLS documentadas.
 - Storage com paths iniciados por `user_id`.
 - Tipos TypeScript gerados a partir do Supabase.
+- Pre-requisitos de conteudos devem usar `study_topic_prerequisites`, nao arrays.
+- Ciclos de pre-requisitos devem ser validados no dominio com testes.
+- Sessoes de estudo devem usar `duration_seconds` e nao depender apenas de duracao enviada pelo client.
 
 ## Qualidade antes de concluir tarefas
 
